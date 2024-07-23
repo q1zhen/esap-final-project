@@ -1,0 +1,43 @@
+{
+	"type": "Feature",
+	"id": 1,
+	"geometry": {
+		"type": "LineString",
+		"coordinates": [
+			[
+				17034665.1925,
+				-3193279.1907
+			],
+			[
+				17034686.4545,
+				-3193295.6398
+			]
+		]
+	},
+	"properties": {
+		"objectid": 1,
+		"featuresubtype": 90015,
+		"name": "GOLD COAST/BEENLEIGH LINE",
+		"operational_status": "Operational",
+		"feature_date": "2016-07-02T00:00:00+00:00",
+		"feature_source": "Orthophotography_10cm_Brisbane",
+		"attribute_date": "2016-10-01T00:00:00+00:00",
+		"attribute_source": "Queensland Rail",
+		"planimetric_accuracy": 10,
+		"source_ufi": null,
+		"source_jurisdiction": "QLD",
+		"custodian_agency": "Department of Natural Resources, Mines and Energy",
+		"custodian_licensing": "Creative Commons Attribution 4.0 International Licence © State of Queensland (Department of Natural Resources, Mines and Energy) 2020",
+		"loading_date": "2021-03-25T21:54:42+00:00",
+		"track_gauge": "Narrow: 1067mm",
+		"ground_relationship": "On Ground",
+		"tracks": "Single",
+		"length_km": 0.02380233,
+		"alternative_name": "Roma Street to Beenleigh",
+		"owner": "Queensland Rail",
+		"source_supply_date": "2021-01-15T00:00:00+00:00",
+		"infrastructuretype": "90016",
+		"field": null,
+		"globalid": "b06cfba6-18e1-47af-8aff-e3107276e8b2"
+	}
+}
