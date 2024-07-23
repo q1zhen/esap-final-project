@@ -2,16 +2,16 @@ import json
 import matplotlib.pyplot as plt
 
 # Load the JSON data
-with open('parsed.json', 'r') as file:
+with open('graph.json', 'r') as file:
 	data = json.load(file)
 
 # Create a plot
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(8, 8))
 
 # Plot each line from start to end
-for item in data:
-	start = item['start']
-	end = item['end']
+for edge in data["edges"]:
+	start = data["nodes"][str(edge[0])]
+	end = data["nodes"][str(edge[1])]
 	plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=0.5)
 
 # Add labels and title

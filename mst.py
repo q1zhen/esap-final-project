@@ -7,15 +7,23 @@ class Edge():
 		s.node1 = n1
 		s.node2 = n2
 
-with open('parsed.json', 'r') as file:
+with open('merged.json', 'r') as file:
 	raw = json.load(file)
+
+with open('norm_centrality.json', 'r') as file:
+	cen = json.load(file)
 
 print("File loaded.")
 
 nodes = set()
 def coord(c):
-    k = 10000
-    return (int(c[0] / k) * k, int(c[1] / k) * k)
+    return (c[0], c[1])
+
+def distance(id1, id2):
+	c1 = id_map[id1]
+	c2 = id_map[id2]
+	return ((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2) ** 0.5 / (cen[str(id1)] + cen[str(id2)])
+
 for i in raw:
 	nodes.add(coord(i["start"]))
 	nodes.add(coord(i["end"]))
@@ -24,10 +32,6 @@ id_map = {idx: node for idx, node in enumerate(nodes)}
 
 print("Node IDs mapped.")
 
-def distance(id1, id2):
-	c1 = id_map[id1]
-	c2 = id_map[id2]
-	return ((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2) ** 0.5
 
 edges: list[Edge] = []
 for id in range(len(id_map)):
@@ -81,7 +85,7 @@ result = kruskal(edges)
 
 print("Result generated.")
 
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(8, 8))
 for item in result:
 	start = id_map[item.node1]
 	end = id_map[item.node2]
