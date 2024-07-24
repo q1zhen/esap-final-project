@@ -102,8 +102,9 @@ def shapeDoDad(regionName, shapefile_path):
     simplified = removeBridgeNodes(G)
     # Plot the network
     pos = {node: (node[0], node[1]) for node in G.nodes()}
-    nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3, with_labels=False)
-    nx.draw(simplified, pos, node_size=1, edge_color='red', node_color='#99999920', width=2, with_labels=False)
+    # nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3, with_labels=False)
+    nx.draw(G, pos, node_size=0, edge_color='black', node_color='#F8991720', width=1, with_labels=False)
+    # nx.draw(simplified, pos, node_size=1, edge_color='red', node_color='#99999920', width=2, with_labels=False)
     # draw cities
     kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
     # print(centroids)
@@ -121,14 +122,39 @@ def shapeDoDad(regionName, shapefile_path):
     plt.savefig(f'output/{regionName}/simplified_graph_high_res.png', dpi=2000)
     plt.show()
 
-    listOfNodesInSimplified = list(simplified.nodes())
-
     with open(f"output/{regionName}/cleaned_{regionName}.json", "w+") as f:
-        json.dump(listOfNodesInSimplified, f)
+        json.dump(list(simplified.nodes()), f)
+    with open(f"output/{regionName}/uncleaned_{regionName}.json", "w+") as f:
+        json.dump(list(G.nodes()), f)
     with open(f"output/{regionName}/cities_{regionName}.json", "w+") as f:
         json.dump(cities, f)
     with open(f'output/{regionName}/simplified_graph_{regionName}.pkl', 'wb+') as f:
         pickle.dump(simplified, f)
+    # with open(f'output/{regionName}/{regionName}.json', 'w+') as f:
+    #     json.dump({
+    #         'original': {
+    #             'stats': {
+    #                 'nodes': len(G.nodes),
+    #                 'edges': len(G.edges),
+    #                 'cities': len(cities),
+    #             },
+    #             'data': {
+    #                 'nodes': list(G.nodes),
+    #                 'edges': list(G.edges),
+    #                 'cities': cities
+    #             }
+    #         },
+    #         'simplified': {
+    #             'stats': {
+    #                 'nodes': len(simplified.nodes),
+    #                 'edges': len(simplified.edges)
+    #             },
+    #             'data': {
+    #                 'nodes': listOfNodesInSimplified,
+    #                 'edges': list(simplified.edges)
+    #             }
+    #         }
+    #     }, f)
 
 # K australia: 2 8 10 12 19 22 27 31 53, 64, 69, 94
 regionNames = ['australia', 'england', 'scotland', 'wales']
