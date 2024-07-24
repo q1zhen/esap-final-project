@@ -7,7 +7,7 @@ class Edge():
 		s.node1 = n1
 		s.node2 = n2
 
-with open('merged.json', 'r') as file:
+with open('centers.json', 'r') as file:
 	raw = json.load(file)
 
 with open('norm_centrality.json', 'r') as file:
@@ -24,9 +24,11 @@ def distance(id1, id2):
 	c2 = id_map[id2]
 	return ((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2) ** 0.5 / (cen[str(id1)] + cen[str(id2)])
 
-for i in raw:
-	nodes.add(coord(i["start"]))
-	nodes.add(coord(i["end"]))
+# for i in raw:
+# 	nodes.add(coord(i["start"]))
+# 	nodes.add(coord(i["end"]))
+
+for i in raw: nodes.add(coord(i))
 
 id_map = {idx: node for idx, node in enumerate(nodes)}
 
