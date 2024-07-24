@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # Load the shapefile
-shapefile_path = 'australia-latest-free.shp/gis_osm_railways_free_1.shp'
+shapefile_path = 'australia/gis_osm_railways_free_1.shp'
 gdf = gpd.read_file(shapefile_path)
 
 # Create a graph

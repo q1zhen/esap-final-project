@@ -1,5 +1,6 @@
 # import sys
 import json
+import os
 
 import geopandas as gpd
 import networkx as nx
@@ -84,49 +85,53 @@ def snapToNetwork(coords, listOfPoints):
             currentBest = (point, distance)
     return currentBest[0]
 
-# Load the shapefile
-shapefile_path = 'australia-latest-free.shp/gis_osm_railways_free_1.dbf'
-regionName = 'australia'
+def shapeDoDad(regionName, shapefile_path):
+    gdf = gpd.read_file(shapefile_path)
+    # Create a graph
+    G = nx.Graph()
 
-gdf = gpd.read_file(shapefile_path)
+    # Add edges to the graph, excluding self-loops
+    for index, row in gdf.iterrows():
+        start_point = (row['geometry'].coords[0][0], row['geometry'].coords[0][1])
+        end_point = (row['geometry'].coords[-1][0], row['geometry'].coords[-1][1])
+        if start_point != end_point:  # Check to avoid self-loops
+            length = row['length'] if 'length' in gdf.columns else 0  # Default to 0 if no length column
+            # print(dict(row))
+            G.add_edge(start_point, end_point, length=length, data=row)
 
-# Create a graph
-G = nx.Graph()
+    simplified = removeBridgeNodes(G)
+    # Plot the network
+    pos = {node: (node[0], node[1]) for node in G.nodes()}
+    nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3, with_labels=False)
+    nx.draw(simplified, pos, node_size=1, edge_color='red', node_color='#99999920', width=2, with_labels=False)
+    # draw cities
+    kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
+    # print(centroids)
+    pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
+    nodelist = [tuple(node) for node in centroids.values()]
+    cities = []
+    for node in nodelist:
+        cities.append(snapToNetwork(node, list(simplified.nodes)))
+    Gnet = nx.Graph()
+    Gnet.add_nodes_from(cities)
+    pos = {node: (node[0], node[1]) for node in Gnet.nodes()}
+    nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
+    # create folder for region name
+    os.makedirs(f'output/{regionName}', exist_ok=True)
+    plt.savefig(f'output/{regionName}/simplified_graph_high_res.png', dpi=2000)
+    plt.show()
 
-# Add edges to the graph, excluding self-loops
-for index, row in gdf.iterrows():
-    start_point = (row['geometry'].coords[0][0], row['geometry'].coords[0][1])
-    end_point = (row['geometry'].coords[-1][0], row['geometry'].coords[-1][1])
-    if start_point != end_point:  # Check to avoid self-loops
-        length = row['length'] if 'length' in gdf.columns else 0  # Default to 0 if no length column
-        # print(dict(row))
-        G.add_edge(start_point, end_point, length=length, data=row)
+    listOfNodesInSimplified = list(simplified.nodes())
 
-simplified = removeBridgeNodes(G)
-# Plot the network
-pos = {node: (node[0], node[1]) for node in G.nodes()}
-nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3, with_labels=False)
-nx.draw(simplified, pos, node_size=1, edge_color='red', node_color='#99999920', width=2, with_labels=False)
-# draw cities
-kmeanCities, centroids = find_concentrated_points(simplified, 8, pos)
-# print(centroids)
-pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
-nodelist = [tuple(node) for node in centroids.values()]
-cities = []
-for node in nodelist:
-    cities.append(snapToNetwork(node, list(simplified.nodes)))
-Gnet = nx.Graph()
-Gnet.add_nodes_from(cities)
-pos = {node: (node[0], node[1]) for node in Gnet.nodes()}
-nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
-plt.savefig('simplified_graph_high_res.png', dpi=2000)
-plt.show()
+    with open(f"output/{regionName}/cleaned_{regionName}.json", "w+") as f:
+        json.dump(listOfNodesInSimplified, f)
+    with open(f"output/{regionName}/cities_{regionName}.json", "w+") as f:
+        json.dump(cities, f)
+    with open(f'output/{regionName}/simplified_graph_{regionName}.pkl', 'wb+') as f:
+        pickle.dump(simplified, f)
 
-listOfNodesInSimplified = list(simplified.nodes())
-
-with open(f"cleaned_{regionName}.json", "w+") as f:
-    json.dump(listOfNodesInSimplified, f)
-with open(f"cities_{regionName}.json", "w+") as f:
-    json.dump(cities, f)
-with open('simplified_graph.pkl', 'wb+') as f:
-    pickle.dump(simplified, f)
+# K australia: 2 8 10 12 19 22 27 31 53, 64, 69, 94
+regionNames = ['australia', 'england', 'scotland', 'wales']
+for i in regionNames:
+    shapefile_path = f'input/{i}/gis_osm_railways_free_1.shp'
+    shapeDoDad(i, shapefile_path)
