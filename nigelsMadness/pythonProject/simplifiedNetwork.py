@@ -1,4 +1,6 @@
 # import sys
+import json
+
 import geopandas as gpd
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -84,6 +86,8 @@ def snapToNetwork(coords, listOfPoints):
 
 # Load the shapefile
 shapefile_path = 'australia-latest-free.shp/gis_osm_railways_free_1.dbf'
+regionName = 'australia'
+
 gdf = gpd.read_file(shapefile_path)
 
 # Create a graph
@@ -105,7 +109,7 @@ nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3
 nx.draw(simplified, pos, node_size=1, edge_color='red', node_color='#99999920', width=2, with_labels=False)
 # draw cities
 kmeanCities, centroids = find_concentrated_points(simplified, 8, pos)
-print(centroids)
+# print(centroids)
 pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
 nodelist = [tuple(node) for node in centroids.values()]
 cities = []
@@ -118,6 +122,11 @@ nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
 plt.savefig('simplified_graph_high_res.png', dpi=2000)
 plt.show()
 
-# save the simplified graph
+listOfNodesInSimplified = list(simplified.nodes())
+
+with open(f"cleaned_{regionName}.json", "w+") as f:
+    json.dump(listOfNodesInSimplified, f)
+with open(f"cities_{regionName}.json", "w+") as f:
+    json.dump(cities, f)
 with open('simplified_graph.pkl', 'wb+') as f:
     pickle.dump(simplified, f)
