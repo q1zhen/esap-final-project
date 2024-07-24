@@ -61,43 +61,18 @@ def getCities(G):
 
 
 def find_concentrated_points(G, k, pos=None):
-    """
-    Finds large concentrated points (cities) in a NetworkX graph using k-means clustering.
-
-    Parameters:
-    - G: networkx.Graph - The input graph.
-    - k: int - The number of clusters to find.
-    - pos: dict (optional) - A dictionary with nodes as keys and positions as values. If not provided, a spring layout will be used.
-
-    Returns:
-    - clusters: dict - A dictionary with cluster labels as keys and lists of nodes as values.
-    - centroids: dict - A dictionary with cluster labels as keys and centroid positions as values.
-    """
-
-    # If no positions are provided, use a spring layout
     if pos is None:
         pos = nx.spring_layout(G)
-
-    # Extract positions into a numpy array
     nodes = list(G.nodes)
     positions = np.array([pos[node] for node in nodes])
-
-    # Apply k-means clustering
     kmeans = KMeans(n_clusters=k)
     kmeans.fit(positions)
-
-    # Get cluster labels and centroids
     labels = kmeans.labels_
     centroids = kmeans.cluster_centers_
-
-    # Organize nodes by their cluster labels
     clusters = {i: [] for i in range(k)}
     for node, label in zip(nodes, labels):
         clusters[label].append(node)
-
-    # Convert centroids to a dictionary with cluster labels as keys
     centroid_dict = {i: centroids[i] for i in range(k)}
-
     return clusters, centroid_dict
 
 # Load the shapefile
@@ -126,15 +101,9 @@ cities = getCities(simplified)
 kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
 print(centroids)
 pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
-# Convert centroids.values() to a list of tuples
 nodelist = [tuple(node) for node in centroids.values()]
-
-# Use the modified nodelist in the draw_networkx_nodes function
 nx.draw_networkx_nodes(simplified, pos, nodelist=nodelist, node_size=30, node_color='#0000FF90')
-plt.title('Railroad Network')
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.savefig('simplified_graph_high_res.png', dpi=200)
+plt.savefig('simplified_graph_high_res.png', dpi=2000)
 plt.show()
 
 # save the simplified graph
