@@ -39,7 +39,7 @@ def removeBridgeNode(G, node):
             G.add_edge(neighbors[0], neighbors[1], length=edge1['length'] + edge2['length'])
         else:
             pass
-    # return G
+    return G
 
 def getCities(G):
     radius = 0.5
@@ -59,7 +59,6 @@ def getCities(G):
                 break
     return cities
 
-
 def find_concentrated_points(G, k, pos=None):
     if pos is None:
         pos = nx.spring_layout(G)
@@ -74,6 +73,14 @@ def find_concentrated_points(G, k, pos=None):
         clusters[label].append(node)
     centroid_dict = {i: centroids[i] for i in range(k)}
     return clusters, centroid_dict
+
+def snapToNetwork(coords, listOfPoints):
+    currentBest = [listOfPoints[0], ((coords[0] - listOfPoints[0][0]) ** 2 + (coords[1] - listOfPoints[0][1]) ** 2) ** 0.5]
+    for point in listOfPoints:
+        distance = ((coords[0] - point[0]) ** 2 + (coords[1] - point[1]) ** 2) ** 0.5
+        if distance < currentBest[1]:
+            currentBest = (point, distance)
+    return currentBest[0]
 
 # Load the shapefile
 shapefile_path = 'australia-latest-free.shp/gis_osm_railways_free_1.dbf'
@@ -97,12 +104,17 @@ pos = {node: (node[0], node[1]) for node in G.nodes()}
 nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3, with_labels=False)
 nx.draw(simplified, pos, node_size=1, edge_color='red', node_color='#99999920', width=2, with_labels=False)
 # draw cities
-cities = getCities(simplified)
-kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
+kmeanCities, centroids = find_concentrated_points(simplified, 8, pos)
 print(centroids)
 pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
 nodelist = [tuple(node) for node in centroids.values()]
-nx.draw_networkx_nodes(simplified, pos, nodelist=nodelist, node_size=30, node_color='#0000FF90')
+cities = []
+for node in nodelist:
+    cities.append(snapToNetwork(node, list(simplified.nodes)))
+Gnet = nx.Graph()
+Gnet.add_nodes_from(cities)
+pos = {node: (node[0], node[1]) for node in Gnet.nodes()}
+nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
 plt.savefig('simplified_graph_high_res.png', dpi=2000)
 plt.show()
 
