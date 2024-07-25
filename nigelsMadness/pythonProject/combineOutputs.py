@@ -5,7 +5,7 @@ import sys
 import geopandas as gpd
 import networkx as nx
 
-# Load the files from output and puththem into /merge
+# Load the files from output and put them into /merge
 cleaned = {}
 uncleaned = {}
 cities = {}
@@ -31,55 +31,42 @@ for f in os.listdir('output'):
         except:
             print(f"Failed to load {f}")
             sys.exit(1)
-
+def getTupledBozo(nodes, edges):
+    betterEdges = []
+    for edge in edges:
+        betterEdges.append((tuple(edge[0]), tuple(edge[1])))
+    edges = tuple(betterEdges)
+    betterNodes = []
+    for node in nodes:
+        if isinstance(node, list):
+            betterNodes.append(tuple(node))
+    nodes = tuple(betterNodes)
+    return nodes, edges
 # Create a new graph
 GClean = nx.Graph()
 for region in cleaned:
-    # Ensure nodes are hashable; assuming cleaned[region] is a list of nodes
-    nodes = cleaned[region]
-    edges = cleanedEdges[region]
-    if nodes and isinstance(nodes[0], list):  # If nodes are lists, convert to tuples or another hashable type
-        nodes = [tuple(node) for node in nodes]
-    # elif nodes and isinstance(nodes[0], float):  # If nodes are floats, convert to strings or another suitable format
-    #     nodes = [str(node) for node in nodes]
-    if edges and isinstance(edges[0], list):  # If edges are lists, convert to tuples or another hashable type
-        edges = [tuple(edge) for edge in edges]
-    # elif edges and isinstance(edges[0], float):  # If edges are floats, convert to strings or another suitable format
-    #     edges = [str(edge) for edge in edges]
-    GClean.add_nodes_from(nodes)
-    GClean.add_edges_from(edges)
+    processed = getTupledBozo(cleaned[region], cleanedEdges[region])
+    GClean.add_nodes_from(processed[0])
+    GClean.add_edges_from(processed[1])
 
 GUnclean = nx.Graph()
-for region in cleaned:
-    # Ensure nodes are hashable; assuming cleaned[region] is a list of nodes
-    nodes = uncleaned[region]
-    edges = uncleanedEdges[region]
-    if nodes and isinstance(nodes[0], list):  # If nodes are lists, convert to tuples or another hashable type
-        nodes = [tuple(node) for node in nodes]
-    # elif nodes and isinstance(nodes[0], float):  # If nodes are floats, convert to strings or another suitable format
-    #     nodes = [str(node) for node in nodes]
-    if edges and isinstance(edges[0], list):  # If edges are lists, convert to tuples or another hashable type
-        edges = [tuple(edge) for edge in edges]
-    # elif edges and isinstance(edges[0], float):  # If edges are floats, convert to strings or another suitable format
-    #     edges = [str(edge) for edge in edges]
-    GUnclean.add_nodes_from(nodes)
-    GUnclean.add_edges_from(edges)
+for region in uncleaned:
+    processed = getTupledBozo(uncleaned[region], uncleanedEdges[region])
+    GUnclean.add_nodes_from(processed[0])
+    GUnclean.add_edges_from(processed[1])
 
 GCities = nx.Graph()
 for region in cities:
-    # Ensure nodes are hashable; assuming cleaned[region] is a list of nodes
     nodes = cities[region]
     if nodes and isinstance(nodes[0], list):  # If nodes are lists, convert to tuples or another hashable type
-        nodes = [tuple(node) for node in nodes]
-    # elif nodes and isinstance(nodes[0], float):  # If nodes are floats, convert to strings or another suitable format
-    #     nodes = [str(node) for node in nodes]
+        nodes = tuple(tuple(node) for node in nodes)
     GCities.add_nodes_from(nodes)
 
 # Save the graphs
 os.makedirs('output/merged', exist_ok=True)
-with open('output/merged/cleaned.json', 'w+') as f:
+with open('output/merged/cleaned_nodes.json', 'w+') as f:
     json.dump(list(GClean.nodes()), f)
-with open('output/merged/uncleaned.json', 'w+') as f:
+with open('output/merged/uncleaned_nodes.json', 'w+') as f:
     json.dump(list(GUnclean.nodes()), f)
 with open('output/merged/cities.json', 'w+') as f:
     json.dump(list(GCities.nodes()), f)
@@ -87,7 +74,3 @@ with open('output/merged/cleaned_edges.json', 'w+') as f:
     json.dump(list(GClean.edges()), f)
 with open('output/merged/uncleaned_edges.json', 'w+') as f:
     json.dump(list(GUnclean.edges()), f)
-
-
-
-
