@@ -1,6 +1,6 @@
 import json
 import matplotlib.pyplot as plt
-
+location = "kanto"
 class Edge():
 	def __init__(s, w, n1, n2):
 		s.weight = w
@@ -99,8 +99,9 @@ for item in result:
 
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
-plt.title('Track Lines')
+plt.title(f'Track Lines of {location}')
 
 print("Plotting.")
+plt.savefig(f'cheezhenPlots/mst_{location}.png', dpi=400)
 plt.show()
 
