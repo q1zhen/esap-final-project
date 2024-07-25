@@ -1,10 +1,2 @@
-/nigelsMadness/pythonProject/input/africa-latest.osm.pbf
-/nigelsMadness/pythonProject/input/antarctica-latest.osm.pbf
-/nigelsMadness/pythonProject/input/asia-latest.osm.pbf
-/nigelsMadness/pythonProject/input/australia-oceania-latest.osm.pbf
-/nigelsMadness/pythonProject/input/central-america-latest.osm.pbf
-/nigelsMadness/pythonProject/input/europe-latest.osm.pbf
-/nigelsMadness/pythonProject/input/north-america-latest.osm.pbf
-/nigelsMadness/pythonProject/input/south-america-latest.osm.pbf
-/nigelsMadness/pythonProject/input/
-/nigelsMadness/pythonProject/output/merged/
+/nigelsMadness/pythonProject/input/*
+/nigelsMadness/pythonProject/output/merged/*

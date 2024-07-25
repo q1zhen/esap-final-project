@@ -103,6 +103,24 @@ def snapToNetwork(coords, listOfPoints):
             currentBest = (point, distance)
     return currentBest[0]
 
+def pressNodes(graph, radius):
+    nodes = list(graph.nodes)
+    for node in nodes:
+        for node2 in nodes:
+            if node == node2:
+                continue
+            if abs(node[0]-node2[0]) < radius and abs(node[1]-node2[1]) < radius:
+                graph = mergeNodes(graph, node, node2)
+    return graph
+
+def mergeNodes(graph, node1, node2):
+    if node1 in graph.nodes() and node2 in graph.nodes():
+        neighbors = list(graph.neighbors(node1))
+        for neighbor in neighbors:
+            graph.add_edge(node2, neighbor, length=graph.get_edge_data(node1, neighbor)['length'])
+        graph.remove_node(node1)
+    return graph
+
 def shapeDoDad(regionName, shapefile_path):
     gdf = gpd.read_file(shapefile_path)
     # Create a graph
@@ -119,21 +137,21 @@ def shapeDoDad(regionName, shapefile_path):
 
     simplified = removeBridgeNodes(G)
     # Plot the network
-    # pos = {node: (node[0], node[1]) for node in G.nodes()}
-    # nx.draw(G, pos, node_size=3, edge_color='green', node_color='#F8991718', width=3, with_labels=False)
-    # nx.draw(simplified, pos, node_size=2, edge_color='red', node_color='#00991780', width=2, with_labels=False)
+    pos = {node: (node[0], node[1]) for node in G.nodes()}
+    nx.draw(G, pos, node_size=3, edge_color='green', node_color='#F8991718', width=3, with_labels=False)
+    nx.draw(simplified, pos, node_size=2, edge_color='red', node_color='#00991780', width=2, with_labels=False)
     # draw cities
-    # kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
-    # # print(centroids)
-    # pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
-    # nodelist = [tuple(node) for node in centroids.values()]
-    # cities = []
-    # for node in nodelist:
-    #     cities.append(snapToNetwork(node, list(simplified.nodes)))
-    # Gnet = nx.Graph()
-    # Gnet.add_nodes_from(cities)
-    # pos = {node: (node[0], node[1]) for node in Gnet.nodes()}
-    # nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
+    kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
+    # print(centroids)
+    pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
+    nodelist = [tuple(node) for node in centroids.values()]
+    cities = []
+    for node in nodelist:
+        cities.append(snapToNetwork(node, list(simplified.nodes)))
+    Gnet = nx.Graph()
+    Gnet.add_nodes_from(cities)
+    pos = {node: (node[0], node[1]) for node in Gnet.nodes()}
+    nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
     # create folder for region name
     os.makedirs(f'output/{regionName}', exist_ok=True)
     plt.savefig(f'output/{regionName}/simplified_graph_high_res.png', dpi=2000)
@@ -177,6 +195,8 @@ def shapeDoDad(regionName, shapefile_path):
     #         }
     #     }, f)
 
+def findOptimalSilhouetteScore(graph, kmax):
+
 
 def process_shapefile(regionName, shapefile_path):
     # Your existing logic for processing a shapefile
@@ -204,18 +224,16 @@ def process_continent(continent, countries, max_processes):
         p.join()
 
 def main():
-    # base_dir = 'input/WORLD'
-    # max_processes = 16  # Set a limit for the number of concurrent processes
-    #
-    # for continent in os.listdir(base_dir):
-    #     continent_path = os.path.join(base_dir, continent)
-    #     if os.path.isdir(continent_path):
-    #         countries = [country for country in os.listdir(continent_path) if os.path.isdir(os.path.join(continent_path, country))]
-    #         process_continent(continent, countries, max_processes)
-    #
-    # print("All regions processed.")
-    # process only wales
-    shapeDoDad('wales', 'input/WORLD/EUROPE/wales-latest-free.shp/gis_osm_railways_free_1.shp')
+    base_dir = 'input/WORLD'
+    max_processes = 16  # Set a limit for the number of concurrent processes
+
+    for continent in os.listdir(base_dir):
+        continent_path = os.path.join(base_dir, continent)
+        if os.path.isdir(continent_path):
+            countries = [country for country in os.listdir(continent_path) if os.path.isdir(os.path.join(continent_path, country))]
+            process_continent(continent, countries, max_processes)
+
+    print("All regions processed.")
 
 if __name__ == "__main__":
     main()
