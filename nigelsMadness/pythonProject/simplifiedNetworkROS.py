@@ -4,6 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
+from pyrosm.data import sources, get_data
 from sklearn.cluster import KMeans
 # import osmnx as ox
 from pyrosm import OSM
@@ -87,9 +88,11 @@ def snapToNetwork(coords, listOfPoints):
     return currentBest[0]
 
 
-def shapeDoDad(regionName, pbf_path):
+def shapeDoDad(regionName):
     custom_filter = {"railway": ["rail", "light_rail", "subway", "tram", "monorail"]}
-    G = OSM(pbf_path).get_data_by_custom_criteria(custom_filter)
+    print(regionName)
+    fp = get_data(regionName)
+    G = OSM(fp).get_data_by_custom_criteria(custom_filter)
     print(i)
     print(G)
     if G is None:
@@ -125,8 +128,9 @@ def shapeDoDad(regionName, pbf_path):
         pickle.dump(simplified, f)
 
 
-regionNames = ['australia-oceania', 'africa', 'asia', 'europe', 'north-america', 'south-america', 'antarctica', 'central-america']
-# regionNames = ['antarctica']
+regionNames = []
+for i in sources.available.keys():
+    for j in sources.available[i]:
+        regionNames.append(j)
 for i in regionNames:
-    pbf_path = f'input/{i}-latest.osm.pbf'
-    shapeDoDad(i, pbf_path)
+    shapeDoDad(i)
