@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+
 import geopandas as gpd
 import networkx as nx
 
@@ -12,11 +14,23 @@ uncleanedEdges = {}
 for f in os.listdir('output'):
     if ".DS_Store" in f or 'merged' in f:
         continue
-    cleaned[f] = json.load(open(f'output/{f}/cleaned_nodes_{f}.json'))
-    uncleaned[f] = json.load(open(f'output/{f}/uncleaned_nodes_{f}.json'))
-    cities[f] = json.load(open(f'output/{f}/cities_{f}.json'))
-    cleanedEdges[f] = json.load(open(f'output/{f}/cleaned_edges_{f}.json'))
-    uncleanedEdges[f] = json.load(open(f'output/{f}/uncleaned_edges_{f}.json'))
+    try:
+        cleaned[f] = json.load(open(f'output/{f}/cleaned_nodes_{f}.json'))
+        uncleaned[f] = json.load(open(f'output/{f}/uncleaned_nodes_{f}.json'))
+        cities[f] = json.load(open(f'output/{f}/cities_{f}.json'))
+        cleanedEdges[f] = json.load(open(f'output/{f}/cleaned_edges_{f}.json'))
+        uncleanedEdges[f] = json.load(open(f'output/{f}/uncleaned_edges_{f}.json'))
+    except:
+        try:
+            cleaned[f] = json.load(open(f'output/{f}/cleaned_{f}.json'))
+            uncleaned[f] = json.load(open(f'output/{f}/uncleaned_{f}.json'))
+            cities[f] = json.load(open(f'output/{f}/cities_{f}.json'))
+            cleanedEdges[f] = []
+            uncleanedEdges[f] = []
+            print(f"Warn: {f}")
+        except:
+            print(f"Failed to load {f}")
+            sys.exit(1)
 
 # Create a new graph
 GClean = nx.Graph()
@@ -69,6 +83,10 @@ with open('output/merged/uncleaned.json', 'w+') as f:
     json.dump(list(GUnclean.nodes()), f)
 with open('output/merged/cities.json', 'w+') as f:
     json.dump(list(GCities.nodes()), f)
+with open('output/merged/cleaned_edges.json', 'w+') as f:
+    json.dump(list(GClean.edges()), f)
+with open('output/merged/uncleaned_edges.json', 'w+') as f:
+    json.dump(list(GUnclean.edges()), f)
 
 
 

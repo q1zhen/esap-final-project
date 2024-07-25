@@ -204,16 +204,18 @@ def process_continent(continent, countries, max_processes):
         p.join()
 
 def main():
-    base_dir = 'input/WORLD'
-    max_processes = 16  # Set a limit for the number of concurrent processes
-
-    for continent in os.listdir(base_dir):
-        continent_path = os.path.join(base_dir, continent)
-        if os.path.isdir(continent_path):
-            countries = [country for country in os.listdir(continent_path) if os.path.isdir(os.path.join(continent_path, country))]
-            process_continent(continent, countries, max_processes)
-
-    print("All regions processed.")
+    # base_dir = 'input/WORLD'
+    # max_processes = 16  # Set a limit for the number of concurrent processes
+    #
+    # for continent in os.listdir(base_dir):
+    #     continent_path = os.path.join(base_dir, continent)
+    #     if os.path.isdir(continent_path):
+    #         countries = [country for country in os.listdir(continent_path) if os.path.isdir(os.path.join(continent_path, country))]
+    #         process_continent(continent, countries, max_processes)
+    #
+    # print("All regions processed.")
+    # process only wales
+    shapeDoDad('wales', 'input/WORLD/EUROPE/wales-latest-free.shp/gis_osm_railways_free_1.shp')
 
 if __name__ == "__main__":
     main()
