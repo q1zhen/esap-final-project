@@ -31,7 +31,7 @@ plt.plot(k_range, silhouette_scores, marker='o')
 plt.title('Silhouette Scores for Different k Values')
 plt.xlabel('Number of Clusters (k)')
 plt.ylabel('Silhouette Score')
-plt.savefig(f'kmeans_silhouette_.png', dpi=400)
+plt.savefig(f'cheezhenPlots/kmeans_{location}_silhouette_.png', dpi=400)
 plt.show()
 
 # Not fun stuff here
@@ -47,23 +47,23 @@ plt.show()
 # plt.show()
 
 # fun stuff here
-# for k in [2, 16, 24, 29]:
-# 	print(k)
-# 	kmeans = KMeans(n_clusters=k, random_state=0).fit(coordinates)
-#
-# 	labels = kmeans.labels_
-#
-# 	centers = kmeans.cluster_centers_
-#
-# 	with open('centers.json', 'w+') as file:
-# 		file.write(json.dumps([
-# 			list(i) for i in centers
-# 		]))
-#
-# 	plt.scatter(coordinates[:, 0], coordinates[:, 1], c=labels, cmap='viridis', s=10)
-# 	plt.scatter(centers[:, 0], centers[:, 1], c='red', marker='x')
-# 	plt.title(f'K-Means Clustering (k = {k})')
-# 	plt.xlabel('X Coordinate')
-# 	plt.ylabel('Y Coordinate')
-# 	plt.savefig(f'kmeans_{k}_.png', dpi=400)
-# 	plt.show()
+for k in [2, 16, 24, 29]:
+	print(k)
+	kmeans = KMeans(n_clusters=k, random_state=0).fit(coordinates)
+
+	labels = kmeans.labels_
+
+	centers = kmeans.cluster_centers_
+
+	with open('centers.json', 'w+') as file:
+		file.write(json.dumps([
+			list(i) for i in centers
+		]))
+
+	plt.scatter(coordinates[:, 0], coordinates[:, 1], c=labels, cmap='viridis', s=10)
+	plt.scatter(centers[:, 0], centers[:, 1], c='red', marker='x')
+	plt.title(f'K-Means Clustering (k = {k})')
+	plt.xlabel('X Coordinate')
+	plt.ylabel('Y Coordinate')
+	plt.savefig(f'cheezhenPlots/kmeans_{location}_{k}_.png', dpi=400)
+	plt.show()
