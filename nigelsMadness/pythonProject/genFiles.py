@@ -196,6 +196,7 @@ def shapeDoDad(regionName, shapefile_path):
     #     }, f)
 
 def findOptimalSilhouetteScore(graph, kmax):
+    pass
 
 
 def process_shapefile(regionName, shapefile_path):
