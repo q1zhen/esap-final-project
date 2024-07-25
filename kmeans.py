@@ -4,7 +4,7 @@ from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 import json
 
-with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
+with open('nigelsMadness/pythonProject/output/england/uncleaned_england.json', 'r') as file:
 	raw = json.load(file)
 
 # coordinates = np.array(list(raw["nodes"].values()))
@@ -45,7 +45,7 @@ coordinates = np.array(raw)
 # plt.ylabel('Y Coordinate')
 # plt.show()
 
-for k in [3, 9, 16]:
+for k in [1000]:
 	kmeans = KMeans(n_clusters=k, random_state=0).fit(coordinates)
 
 	labels = kmeans.labels_

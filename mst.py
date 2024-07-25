@@ -9,8 +9,8 @@ class Edge():
 
 with open('centers.json', 'r') as file:
 	raw = json.load(file)
-with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
-	raw = json.load(file)
+# with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
+# 	raw = json.load(file)
 
 with open('norm_centrality.json', 'r') as file:
 	cen = json.load(file)
