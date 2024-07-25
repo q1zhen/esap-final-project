@@ -1,5 +1,13 @@
 import json
 import matplotlib.pyplot as plt
+import random
+
+COLORS = ["#10ac84", "#0abde3", "#ee5253", "#ff9f43"]
+
+def randomColor():
+	return random.choice(COLORS)
+
+
 location = "kanto"
 class Edge():
 	def __init__(s, w, n1, n2):
@@ -91,11 +99,32 @@ result = kruskal(edges)
 
 print("Result generated.")
 
-plt.figure(figsize=(8, 8))
+def miniMetro(start, end):
+	x = end[0] - start[0]
+	y = end[1] - start[1]
+	if y < 0:
+		return miniMetro(end, start)
+	else:
+		if random.randint(0, 1):
+			if abs(x) > y:
+				return [start[0], end[0] - x / abs(x) * y, end[0]], [start[1], start[1], end[1]]
+			else:
+				return [start[0], start[0], end[0]], [start[1], end[1] - abs(x), end[1]]
+		else:
+			if abs(x) > y:
+				return [start[0], start[0] + x / abs(x) * y, end[0]], [start[1], end[1], end[1]]
+			else:
+				return [start[0], end[0], end[0]], [start[1], start[1] + abs(x), end[1]]
+
+# plt.figure(figsize=(8, 8))
 for item in result:
 	start = id_map[item.node1]
 	end = id_map[item.node2]
-	plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=0.5)
+	# plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=5)
+	x, y = miniMetro(start, end)
+	plt.plot(x, y, color=randomColor(), linewidth=5)
+	plt.scatter([start[0], end[0]], [start[1], end[1]], \
+		color="white", edgecolor="black", linewidths=2, s=140, zorder=5)
 
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
