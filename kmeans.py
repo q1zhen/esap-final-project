@@ -3,7 +3,9 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 import json
-location = "kanto"
+import os
+
+location = "vietnam"
 with open(f'nigelsMadness/pythonProject/output/{location}-latest-free.shp/cleaned_nodes_{location}-latest-free.shp.json', 'r') as file:
 	raw = json.load(file)
 
@@ -28,7 +30,7 @@ optimal_k = k_range[np.argmax(silhouette_scores)]
 print(f"The optimal number of clusters (k) is: {optimal_k}")
 
 plt.plot(k_range, silhouette_scores, marker='o')
-plt.title('Silhouette Scores for Different k Values')
+plt.title(f'Silhouette Scores for Different k Values [{location.capitalize()}]')
 plt.xlabel('Number of Clusters (k)')
 plt.ylabel('Silhouette Score')
 plt.savefig(f'cheezhenPlots/kmeans_{location}_silhouette_.png', dpi=400)
@@ -47,7 +49,12 @@ plt.show()
 # plt.show()
 
 # fun stuff here
-for k in [2, 16, 24, 29]:
+
+l = input("Enter k values: ")
+kl = [int(i) for i in l.split(",")]
+
+for k in kl:
+	plt.axes().set_aspect('equal')
 	print(k)
 	kmeans = KMeans(n_clusters=k, random_state=0).fit(coordinates)
 
@@ -62,8 +69,9 @@ for k in [2, 16, 24, 29]:
 
 	plt.scatter(coordinates[:, 0], coordinates[:, 1], c=labels, cmap='viridis', s=10)
 	plt.scatter(centers[:, 0], centers[:, 1], c='red', marker='x')
-	plt.title(f'K-Means Clustering (k = {k})')
+	plt.title(f'K-Means Clustering (k = {k}) [{location.capitalize()}]')
 	plt.xlabel('X Coordinate')
 	plt.ylabel('Y Coordinate')
 	plt.savefig(f'cheezhenPlots/kmeans_{location}_{k}_.png', dpi=400)
 	plt.show()
+	os.system(f"python mst.py {location}")

@@ -1,14 +1,14 @@
 import json
 import matplotlib.pyplot as plt
 import random
+import sys
 
 COLORS = ["#10ac84", "#0abde3", "#ee5253", "#ff9f43"]
 
 def randomColor():
 	return random.choice(COLORS)
 
-
-location = "kanto"
+location = sys.argv[1]
 class Edge():
 	def __init__(s, w, n1, n2):
 		s.weight = w
@@ -26,6 +26,7 @@ with open('norm_centrality.json', 'r') as file:
 print("File loaded.")
 
 nodes = set()
+
 def coord(c):
 	return (c[0], c[1])
 
@@ -40,6 +41,7 @@ def distance(id1, id2):
 
 for i in raw: nodes.add(coord(i))
 
+IS_MINIMETRO = len(nodes) < 100
 id_map = {idx: node for idx, node in enumerate(nodes)}
 
 print("Node IDs mapped.")
@@ -116,21 +118,43 @@ def miniMetro(start, end):
 			else:
 				return [start[0], end[0], end[0]], [start[1], start[1] + abs(x), end[1]]
 
+plt.axes().set_aspect('equal')
 # plt.figure(figsize=(8, 8))
+for item in result:
+	start = id_map[item.node1]
+	end = id_map[item.node2]
+	plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=2)
+
+
+plt.xlabel('X Coordinate')
+plt.ylabel('Y Coordinate')
+plt.title(f'Track Lines of {location.capitalize()}')
+
+print("Plotting.")
+plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}.png', dpi=400)
+plt.show()
+
+plt.axes().set_aspect('equal')
 for item in result:
 	start = id_map[item.node1]
 	end = id_map[item.node2]
 	# plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=5)
 	x, y = miniMetro(start, end)
-	plt.plot(x, y, color=randomColor(), linewidth=5)
-	plt.scatter([start[0], end[0]], [start[1], end[1]], \
-		color="white", edgecolor="black", linewidths=2, s=140, zorder=5)
+	if IS_MINIMETRO:
+		plt.plot(x, y, color=randomColor(), linewidth=5)
+		plt.scatter([start[0], end[0]], [start[1], end[1]], \
+			color="white", edgecolor="black", linewidths=2, s=140, zorder=5)
+	else:
+		plt.plot(x, y, color=randomColor(), linewidth=2)
+		plt.scatter([start[0], end[0]], [start[1], end[1]], \
+			color="white", edgecolor="black", linewidths=1, s=16, zorder=5)
+
 
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
-plt.title(f'Track Lines of {location}')
+plt.title(f'Track Lines of {location.capitalize()} [metro style]')
 
 print("Plotting.")
-plt.savefig(f'cheezhenPlots/mst_{location}.png', dpi=400)
+plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}_minimetro.png', dpi=400)
 plt.show()
 
