@@ -12,6 +12,9 @@ from sklearn.cluster import KMeans
 
 import threading
 
+from sklearn.metrics import silhouette_score
+
+
 # IF a node only serves to bridge two edges, remove it and connect the two edges directly with a new single edge
 def removeBridgeNodes(G):
     outputGraph = G.copy()
@@ -103,23 +106,33 @@ def snapToNetwork(coords, listOfPoints):
             currentBest = (point, distance)
     return currentBest[0]
 
+
 def pressNodes(graph, radius):
     nodes = list(graph.nodes)
-    for node in nodes:
-        for node2 in nodes:
-            if node == node2:
+    merged_nodes = set()
+
+    for i, node1 in enumerate(nodes):
+        if node1 in merged_nodes:
+            continue
+        for node2 in nodes[i + 1:]:
+            if node2 in merged_nodes:
                 continue
-            if abs(node[0]-node2[0]) < radius and abs(node[1]-node2[1]) < radius:
-                graph = mergeNodes(graph, node, node2)
+            if abs(node1[0] - node2[0]) < radius and abs(node1[1] - node2[1]) < radius:
+                graph = mergeNodes(graph, node1, node2)
+                merged_nodes.add(node1)
+                merged_nodes.add(node2)
     return graph
+
 
 def mergeNodes(graph, node1, node2):
     if node1 in graph.nodes() and node2 in graph.nodes():
         neighbors = list(graph.neighbors(node1))
         for neighbor in neighbors:
-            graph.add_edge(node2, neighbor, length=graph.get_edge_data(node1, neighbor)['length'])
+            if neighbor != node2:  # avoid self-loop
+                graph.add_edge(node2, neighbor, length=graph.get_edge_data(node1, neighbor)['length'])
         graph.remove_node(node1)
     return graph
+
 
 def shapeDoDad(regionName, shapefile_path):
     gdf = gpd.read_file(shapefile_path)
@@ -135,7 +148,7 @@ def shapeDoDad(regionName, shapefile_path):
             # print(dict(row))
             G.add_edge(start_point, end_point, length=length, data=row)
 
-    simplified = removeBridgeNodes(G)
+    simplified = removeBridgeNodes(pressNodes(G, 0.0001))
     # Plot the network
     pos = {node: (node[0], node[1]) for node in G.nodes()}
     nx.draw(G, pos, node_size=3, edge_color='green', node_color='#F8991718', width=3, with_labels=False)
@@ -155,7 +168,7 @@ def shapeDoDad(regionName, shapefile_path):
     # create folder for region name
     os.makedirs(f'output/{regionName}', exist_ok=True)
     plt.savefig(f'output/{regionName}/simplified_graph_high_res.png', dpi=2000)
-    plt.show()
+    # plt.show()
 
     with open(f"output/{regionName}/cleaned_nodes_{regionName}.json", "w+") as f:
         json.dump(list(simplified.nodes()), f)
@@ -165,8 +178,8 @@ def shapeDoDad(regionName, shapefile_path):
         json.dump(list(simplified.edges()), f)
     with open(f"output/{regionName}/uncleaned_edges_{regionName}.json", "w+") as f:
         json.dump(list(G.edges()), f)
-    # with open(f"output/{regionName}/cities_{regionName}.json", "w+") as f:
-    #     json.dump(cities, f)
+    with open(f"output/{regionName}/cities_{regionName}.json", "w+") as f:
+        json.dump(cities, f)
     with open(f'output/{regionName}/simplified_graph_{regionName}.pkl', 'wb+') as f:
         pickle.dump(simplified, f)
     # with open(f'output/{regionName}/{regionName}.json', 'w+') as f:
@@ -196,8 +209,15 @@ def shapeDoDad(regionName, shapefile_path):
     #     }, f)
 
 def findOptimalSilhouetteScore(graph, kmax):
-    pass
-
+    best_score = None
+    for k in range(2, kmax):
+        kmeans = KMeans(n_clusters=k)
+        kmeans.fit(graph)
+        labels = kmeans.labels_
+        score = silhouette_score(graph, labels)
+        if not best_score or score > best_score[1]:
+            best_score = (k, score)
+    return best_score
 
 def process_shapefile(regionName, shapefile_path):
     # Your existing logic for processing a shapefile
@@ -206,34 +226,19 @@ def process_shapefile(regionName, shapefile_path):
     print(f"Finished processing {regionName}")
 
 
-def process_continent(continent, countries, max_processes):
-    processes = []
-    for country in countries:
-        shapefile_path = f'input/WORLD/{continent}/{country}/gis_osm_railways_free_1.shp'
-        p = multiprocessing.Process(target=process_shapefile, args=(country, shapefile_path))
-        processes.append(p)
-        p.start()
-
-        # Limit the number of concurrent processes
-        if len(processes) >= max_processes:
-            for p in processes:
-                p.join()
-            processes = []
-
-    # Wait for remaining processes to complete
-    for p in processes:
-        p.join()
+def process_country(continent, country):
+    shapefile_path = f'input/WORLD/{continent}/{country}/gis_osm_railways_free_1.shp'
+    process_shapefile(country.replace('-latest-free.shp', ''), shapefile_path)
 
 def main():
     base_dir = 'input/WORLD'
-    max_processes = 16  # Set a limit for the number of concurrent processes
-
-    for continent in os.listdir(base_dir):
-        continent_path = os.path.join(base_dir, continent)
-        if os.path.isdir(continent_path):
-            countries = [country for country in os.listdir(continent_path) if os.path.isdir(os.path.join(continent_path, country))]
-            process_continent(continent, countries, max_processes)
-
+    for continent in os.listdir('input/WORLD'):
+        if ".DS_Store" in continent:
+            continue
+        for country in os.listdir(f'input/WORLD/{continent}'):
+            if ".DS_Store" in country:
+                continue
+            process_country(continent, country)
     print("All regions processed.")
 
 if __name__ == "__main__":
