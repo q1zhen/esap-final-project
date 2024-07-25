@@ -8,7 +8,7 @@ cleaned = {}
 uncleaned = {}
 cities = {}
 for f in os.listdir('output'):
-    if not os.path.isdir(f):
+    if ".DS_Store" in f or 'merged' in f:
         continue
     cleaned[f] = json.load(open(f'output/{f}/cleaned_{f}.json'))
     uncleaned[f] = json.load(open(f'output/{f}/uncleaned_{f}.json'))
@@ -17,25 +17,33 @@ for f in os.listdir('output'):
 # Create a new graph
 GClean = nx.Graph()
 for region in cleaned:
-    GClean.add_nodes_from(cleaned[region])
-    for node in cleaned[region]:
-        if node not in GClean.nodes():
-            GClean.add_node(node)
+    # Ensure nodes are hashable; assuming cleaned[region] is a list of nodes
+    nodes = (cleaned[region])
+    if nodes and isinstance(nodes[0], list):  # If nodes are lists, convert to tuples or another hashable type
+        nodes = [tuple(node) for node in nodes]
+    elif nodes and isinstance(nodes[0], float):  # If nodes are floats, convert to strings or another suitable format
+        nodes = [str(node) for node in nodes]
+    GClean.add_nodes_from(nodes)
 
-# other graphs too
 GUnclean = nx.Graph()
 for region in uncleaned:
-    GUnclean.add_nodes_from(uncleaned[region])
-    for node in uncleaned[region]:
-        if node not in GUnclean.nodes():
-            GUnclean.add_node(node)
+    # Ensure nodes are hashable; assuming cleaned[region] is a list of nodes
+    nodes = uncleaned[region]
+    if nodes and isinstance(nodes[0], list):  # If nodes are lists, convert to tuples or another hashable type
+        nodes = [tuple(node) for node in nodes]
+    elif nodes and isinstance(nodes[0], float):  # If nodes are floats, convert to strings or another suitable format
+        nodes = [str(node) for node in nodes]
+    GUnclean.add_nodes_from(nodes)
 
 GCities = nx.Graph()
 for region in cities:
-    GCities.add_nodes_from(cities[region])
-    for node in cities[region]:
-        if node not in GCities.nodes():
-            GCities.add_node(node)
+    # Ensure nodes are hashable; assuming cleaned[region] is a list of nodes
+    nodes = cities[region]
+    if nodes and isinstance(nodes[0], list):  # If nodes are lists, convert to tuples or another hashable type
+        nodes = [tuple(node) for node in nodes]
+    elif nodes and isinstance(nodes[0], float):  # If nodes are floats, convert to strings or another suitable format
+        nodes = [str(node) for node in nodes]
+    GCities.add_nodes_from(nodes)
 
 # Save the graphs
 os.makedirs('output/merged', exist_ok=True)
