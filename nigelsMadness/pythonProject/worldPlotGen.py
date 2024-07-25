@@ -100,29 +100,20 @@ def snapToNetwork(coords, listOfPoints):
             currentBest = (point, distance)
     return currentBest[0]
 
-def shapeDoDad(regionName, shapefile_path):
-    gdf = gpd.read_file(shapefile_path)
+def plotWorld(file):
+    # list of tuples
+    nodes = [tuple(node) for node in json.load(open(file))]
     # Create a graph
     G = nx.Graph()
 
     # Add edges to the graph, excluding self-loops
-    for index, row in gdf.iterrows():
-        start_point = (row['geometry'].coords[0][0], row['geometry'].coords[0][1])
-        end_point = (row['geometry'].coords[-1][0], row['geometry'].coords[-1][1])
-        if start_point != end_point:  # Check to avoid self-loops
-            length = row['length'] if 'length' in gdf.columns else 0  # Default to 0 if no length column
-            # print(dict(row))
-            G.add_edge(start_point, end_point, length=length, data=row)
+    G.add_nodes_from(nodes)
 
     simplified = removeBridgeNodes(G)
-    # Plot the network
     pos = {node: (node[0], node[1]) for node in G.nodes()}
-    # nx.draw(G, pos, node_size=2, edge_color='green', node_color='#F8991720', width=3, with_labels=False)
     nx.draw(G, pos, node_size=3, edge_color='green', node_color='#F8991718', width=3, with_labels=False)
     nx.draw(simplified, pos, node_size=2, edge_color='red', node_color='#00991780', width=2, with_labels=False)
-    # draw cities
     kmeanCities, centroids = find_concentrated_points(simplified, 10, pos)
-    # print(centroids)
     pos = {tuple(node): (node[0], node[1]) for node in map(tuple, centroids.values())}
     nodelist = [tuple(node) for node in centroids.values()]
     cities = []
@@ -133,58 +124,10 @@ def shapeDoDad(regionName, shapefile_path):
     pos = {node: (node[0], node[1]) for node in Gnet.nodes()}
     nx.draw_networkx_nodes(Gnet, pos, node_size=30, node_color='blue')
     # create folder for region name
+    regionName = "merged"
     os.makedirs(f'output/{regionName}', exist_ok=True)
     plt.savefig(f'output/{regionName}/simplified_graph_high_res.png', dpi=2000)
     plt.show()
 
-    with open(f"output/{regionName}/cleaned_{regionName}.json", "w+") as f:
-        json.dump(list(simplified.nodes()), f)
-    with open(f"output/{regionName}/uncleaned_{regionName}.json", "w+") as f:
-        json.dump(list(G.nodes()), f)
-    with open(f"output/{regionName}/cities_{regionName}.json", "w+") as f:
-        json.dump(cities, f)
-    with open(f'output/{regionName}/simplified_graph_{regionName}.pkl', 'wb+') as f:
-        pickle.dump(simplified, f)
-    # with open(f'output/{regionName}/{regionName}.json', 'w+') as f:
-    #     json.dump({
-    #         'original': {
-    #             'stats': {
-    #                 'nodes': len(G.nodes),
-    #                 'edges': len(G.edges),
-    #                 'cities': len(cities),
-    #             },
-    #             'data': {
-    #                 'nodes': list(G.nodes),
-    #                 'edges': list(G.edges),
-    #                 'cities': cities
-    #             }
-    #         },
-    #         'simplified': {
-    #             'stats': {
-    #                 'nodes': len(simplified.nodes),
-    #                 'edges': len(simplified.edges)
-    #             },
-    #             'data': {
-    #                 'nodes': listOfNodesInSimplified,
-    #                 'edges': list(simplified.edges)
-    #             }
-    #         }
-    #     }, f)
-
-# K australia: 2 8 10 12 19 22 27 31 53, 64, 69, 94
-
-regionNames = []
-base_dir = 'input/WORLD'
-for continent in os.listdir(base_dir):
-    continent_path = os.path.join(base_dir, continent)
-    if os.path.isdir(continent_path):
-        for country in os.listdir(continent_path):
-            country_path = os.path.join(continent_path, country)
-            if os.path.isdir(country_path):
-                regionNames.append((continent, country))
-
-for continent, country in regionNames:
-    shapefile_path = f'input/WORLD/{continent}/{country}/gis_osm_railways_free_1.shp'
-    print(country, shapefile_path)
-    shapeDoDad(country, shapefile_path)
+plotWorld("output/merged/uncleaned.json")
 
