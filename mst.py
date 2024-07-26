@@ -131,7 +131,7 @@ plt.ylabel('Y Coordinate')
 plt.title(f'Track Lines of {location.capitalize()}')
 
 print("Plotting.")
-plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}.png', dpi=2000)
+plt.savefig(f'plots/mst_{location}_{len(nodes)}.png', dpi=2000)
 plt.show()
 
 plt.axes().set_aspect('equal')
@@ -155,6 +155,6 @@ plt.ylabel('Y Coordinate')
 plt.title(f'Track Lines of {location.capitalize()} [metro style]')
 
 print("Plotting.")
-plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}_minimetrov3.png', dpi=2000)
+plt.savefig(f'plots/mst_{location}_{len(nodes)}_minimetrov3.png', dpi=2000)
 plt.show()
 

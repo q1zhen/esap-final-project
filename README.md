@@ -1,24 +1,9 @@
 # ESAP FINAL PROJECT!!!
 
-The file `graph.json` is the file that will finally be used. It is in the format of:
-```json
-{
-	"nodes": {
-		"0": [x, y],
-		"1": [x, y],
-		...
-	},
-	"edges": [
-		[0, 1],
-		[1, 2],
-		...
-	]
-}
-```
-`"nodes"` describes the coordinates of the nodes, where the key is the node's id and the value is the coordinate. `"edges"` describes a set of edges consisting of the two nodes' ids.
+## How to run a simulation on a country / region / subregion?
 
-The file `centrality.py` reads the data from `graph.json` and generates an adjacency matrix using numpy, and you can do whatever you want then.
-
-The file `norm.py` normalizes data in `centrality.json` and writes output to `norm_centrality.json`. Feel free to change the normalization there.
-
-The file `mst.py` plots the final graph using relavent data. If you want to change how weight is calculated, go to the definition of the `distance()` function.
+1. Go to file `kmeans.py`.
+2. Edit the `location` variable to the name of that country / region / subregion (make sure it exists in `/nigelsMadness/pythonProject/output`).
+3. Execute the file `kmeans.py`.
+4. After the Silhouette test, enter the $k$ values manually (you can use the largest / peaks / any value you want), separate them by comma.
+5. Wait and all plots will be displayed then saved to `/plots`.
