@@ -15,7 +15,7 @@ class Edge():
 		s.node1 = n1
 		s.node2 = n2
 
-with open('centers_WORLD_k5000.json', 'r') as file:
+with open('centers_WORLD_k50.json', 'r') as file:
 	raw = json.load(file)
 # with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
 # 	raw = json.load(file)
