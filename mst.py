@@ -15,7 +15,7 @@ class Edge():
 		s.node1 = n1
 		s.node2 = n2
 
-with open('centers_WORLD_k500.json', 'r') as file:
+with open('centers_WORLD_k5000.json', 'r') as file:
 	raw = json.load(file)
 # with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
 # 	raw = json.load(file)
@@ -151,9 +151,9 @@ for item in result:
         plt.scatter([start[0], end[0]], [start[1], end[1]],
                     color="black", edgecolor="white", linewidths=2, s=140, zorder=5)
     else:
-        plt.plot(x, y, color=randomColor(), linewidth=1.5)
+        plt.plot(x, y, color=randomColor(), linewidth=.7)
         plt.scatter([start[0], end[0]], [start[1], end[1]],
-                    color="black", edgecolor="white", linewidths=0.3, s=3, zorder=5)
+                    color="black", edgecolor="white", linewidths=0.1, s=1, zorder=5)
 
 # Remove ticks
 plt.xticks([])
