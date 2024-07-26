@@ -8,14 +8,14 @@ COLORS = ["#10ac84", "#0abde3", "#ee5253", "#ff9f43"]
 def randomColor():
 	return random.choice(COLORS)
 
-location = sys.argv[1]
+location = "World"
 class Edge():
 	def __init__(s, w, n1, n2):
 		s.weight = w
 		s.node1 = n1
 		s.node2 = n2
 
-with open('centers.json', 'r') as file:
+with open('centers_WORLD_k50.json', 'r') as file:
 	raw = json.load(file)
 # with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
 # 	raw = json.load(file)
@@ -131,7 +131,7 @@ plt.ylabel('Y Coordinate')
 plt.title(f'Track Lines of {location.capitalize()}')
 
 print("Plotting.")
-plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}.png', dpi=400)
+plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}.png', dpi=2000)
 plt.show()
 
 plt.axes().set_aspect('equal')
@@ -143,11 +143,11 @@ for item in result:
 	if IS_MINIMETRO:
 		plt.plot(x, y, color=randomColor(), linewidth=5)
 		plt.scatter([start[0], end[0]], [start[1], end[1]], \
-			color="white", edgecolor="black", linewidths=2, s=140, zorder=5)
+			color="white", edgecolor="black", linewidths=2, s=30, zorder=5)
 	else:
 		plt.plot(x, y, color=randomColor(), linewidth=2)
 		plt.scatter([start[0], end[0]], [start[1], end[1]], \
-			color="white", edgecolor="black", linewidths=1, s=16, zorder=5)
+			color="white", edgecolor="black", linewidths=1, s=2, zorder=5)
 
 
 plt.xlabel('X Coordinate')
@@ -155,6 +155,6 @@ plt.ylabel('Y Coordinate')
 plt.title(f'Track Lines of {location.capitalize()} [metro style]')
 
 print("Plotting.")
-plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}_minimetro.png', dpi=400)
+plt.savefig(f'cheezhenPlots/mst_{location}_{len(nodes)}_minimetrov3.png', dpi=2000)
 plt.show()
 
