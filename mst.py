@@ -118,36 +118,38 @@ def miniMetro(start, end):
 			else:
 				return [start[0], end[0], end[0]], [start[1], start[1] + abs(x), end[1]]
 
-plt.axes().set_aspect('equal')
-# plt.figure(figsize=(8, 8))
+# plt.axes().set_aspect('equal')
+# # plt.figure(figsize=(8, 8))
+# for item in result:
+# 	start = id_map[item.node1]
+# 	end = id_map[item.node2]
+# 	plt.plot([start[0], end[0]], [start[1], end[1]], color='#1f2428', linewidth=2)
+
+
+# plt.xlabel('X Coordinate')
+# plt.ylabel('Y Coordinate')
+# plt.title(f'Track Lines of {location.capitalize()}')
+
+# print("Plotting.")
+# plt.savefig(f'plots/mst_{location}_{len(nodes)}.png', dpi=2000)
+# plt.show()
+
+ax = plt.axes()
+ax.set_facecolor('#1f2428')
+ax.set_aspect('equal')
 for item in result:
 	start = id_map[item.node1]
 	end = id_map[item.node2]
-	plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=2)
-
-
-plt.xlabel('X Coordinate')
-plt.ylabel('Y Coordinate')
-plt.title(f'Track Lines of {location.capitalize()}')
-
-print("Plotting.")
-plt.savefig(f'plots/mst_{location}_{len(nodes)}.png', dpi=2000)
-plt.show()
-
-plt.axes().set_aspect('equal')
-for item in result:
-	start = id_map[item.node1]
-	end = id_map[item.node2]
-	# plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=5)
+	# plt.plot([start[0], end[0]], [start[1], end[1]], color='#1f2428', linewidth=5)
 	x, y = miniMetro(start, end)
 	if IS_MINIMETRO:
 		plt.plot(x, y, color=randomColor(), linewidth=5)
 		plt.scatter([start[0], end[0]], [start[1], end[1]], \
-			color="white", edgecolor="black", linewidths=2, s=30, zorder=5)
+			color="#1f2428", edgecolor="white", linewidths=1.5, s=30, zorder=5)
 	else:
 		plt.plot(x, y, color=randomColor(), linewidth=2)
 		plt.scatter([start[0], end[0]], [start[1], end[1]], \
-			color="white", edgecolor="black", linewidths=1, s=2, zorder=5)
+			color="#1f2428", edgecolor="white", linewidths=1, s=2, zorder=5)
 
 
 plt.xlabel('X Coordinate')
