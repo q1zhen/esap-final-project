@@ -119,8 +119,6 @@ def mergeNodes(graph, node1, node2):
 
 def shapeDoDad(regionName, shapefile_path):
     # check if output dir exists and skit if it does
-    if os.path.exists(f'/Users/massivezappy/Desktop/ESAP/FinalProject/final-project/nigelsMadness/pythonProject/output/{regionName}'):
-        return
     gdf = gpd.read_file(shapefile_path)
     G = nx.Graph()
     for index, row in gdf.iterrows():
@@ -161,6 +159,8 @@ def shapeDoDad(regionName, shapefile_path):
     # print("saved files")
 
 def process_shapefile(regionName, shapefile_path):
+    if os.path.exists(f'/Users/massivezappy/Desktop/ESAP/FinalProject/final-project/nigelsMadness/pythonProject/output/{regionName}'):
+        return
     print(f"Processing {regionName}")
     shapeDoDad(regionName, shapefile_path)
     print(f"Finished processing {regionName}")
