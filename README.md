@@ -1,5 +1,12 @@
 # ESAP FINAL PROJECT!!!
 
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="world-dark.png">
+<source media="(prefers-color-scheme: light)" srcset="world-light.png">
+<img alt="Hashnode logo" src="world-light.png">
+</picture>
+OUR WORLD ↑
+
 ## How to run a simulation on a country / region / subregion?
 
 1. Go to file `kmeans.py`.
