@@ -15,7 +15,7 @@ class Edge():
 		s.node1 = n1
 		s.node2 = n2
 
-with open('centers_WORLD_k50.json', 'r') as file:
+with open('centers_WORLD_k500.json', 'r') as file:
 	raw = json.load(file)
 # with open('nigelsMadness\pythonProject\output\england\cleaned_england.json', 'r') as file:
 # 	raw = json.load(file)
@@ -119,11 +119,11 @@ def miniMetro(start, end):
 				return [start[0], end[0], end[0]], [start[1], start[1] + abs(x), end[1]]
 
 # plt.axes().set_aspect('equal')
-# # plt.figure(figsize=(8, 8))
+# plt.figure(figsize=(8, 8))
 # for item in result:
 # 	start = id_map[item.node1]
 # 	end = id_map[item.node2]
-# 	plt.plot([start[0], end[0]], [start[1], end[1]], color='#1f2428', linewidth=2)
+# 	plt.plot([start[0], end[0]], [start[1], end[1]], color='black', linewidth=2)
 
 
 # plt.xlabel('X Coordinate')
@@ -134,29 +134,32 @@ def miniMetro(start, end):
 # plt.savefig(f'plots/mst_{location}_{len(nodes)}.png', dpi=2000)
 # plt.show()
 
-ax = plt.axes()
-ax.set_facecolor('#1f2428')
+# plt.xlabel('X Coordinate')
+# plt.ylabel('Y Coordinate')
+# plt.title(f'Track Lines of {location.capitalize()} [metro style]')
+# Set the figure and axes background color to black
+
+fig, ax = plt.subplots(facecolor='black')
+ax.set_facecolor('black')
 ax.set_aspect('equal')
 for item in result:
-	start = id_map[item.node1]
-	end = id_map[item.node2]
-	# plt.plot([start[0], end[0]], [start[1], end[1]], color='#1f2428', linewidth=5)
-	x, y = miniMetro(start, end)
-	if IS_MINIMETRO:
-		plt.plot(x, y, color=randomColor(), linewidth=5)
-		plt.scatter([start[0], end[0]], [start[1], end[1]], \
-			color="#1f2428", edgecolor="white", linewidths=1.5, s=30, zorder=5)
-	else:
-		plt.plot(x, y, color=randomColor(), linewidth=2)
-		plt.scatter([start[0], end[0]], [start[1], end[1]], \
-			color="#1f2428", edgecolor="white", linewidths=1, s=2, zorder=5)
+    start = id_map[item.node1]
+    end = id_map[item.node2]
+    x, y = miniMetro(start, end)
+    if IS_MINIMETRO:
+        plt.plot(x, y, color=randomColor(), linewidth=5)
+        plt.scatter([start[0], end[0]], [start[1], end[1]],
+                    color="black", edgecolor="white", linewidths=2, s=140, zorder=5)
+    else:
+        plt.plot(x, y, color=randomColor(), linewidth=1.5)
+        plt.scatter([start[0], end[0]], [start[1], end[1]],
+                    color="black", edgecolor="white", linewidths=0.3, s=3, zorder=5)
 
+# Remove ticks
+plt.xticks([])
+plt.yticks([])
 
-plt.xlabel('X Coordinate')
-plt.ylabel('Y Coordinate')
-plt.title(f'Track Lines of {location.capitalize()} [metro style]')
-
-print("Plotting.")
-plt.savefig(f'plots/mst_{location}_{len(nodes)}_minimetrov3.png', dpi=2000)
+# Save the plot with a black background
+plt.savefig(f'plots/mst_{location}_{len(nodes)}_minimetrov4.png', dpi=2000, facecolor='black')
 plt.show()
 
